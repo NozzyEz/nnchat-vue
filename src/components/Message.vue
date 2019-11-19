@@ -1,3 +1,4 @@
+<!-- A single message in the conversation, differently styled if the message was received or sent -->
 <template>
     <div class="message-wrapper row" :class="[message.received ? 'start-xs' : 'end-xs']">
 

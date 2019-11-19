@@ -1,72 +1,44 @@
+<!-- A single chat/contact in the list of the Chats component -->
 <template>
-    <div>
+    <div class="chat-item row middle-xs" @click="selectChat">
 
-        <div class="user-wrapper row middle-xs">
-            <div class="col-xs">
-                {{$store.state.contacts[$store.state.selectedChat].name}}
-            </div>
+        <!-- Name of the contact -->
+        <div class="user col-xs-12">
+            {{$store.state.contacts[contact].name}}
         </div>
 
-        <div class="messages-wrapper">
-            <messages :chat="$store.state.chats[$store.state.selectedChat]"/>
-        </div>
-
-        <div class="input-wrapper row middle-xs">
-            <div class="col-xs">
-                <input class="input-field" type="text" v-model="message" @keydown.enter="sendMessage">
-            </div>
+        <!-- TODO temp, id and key of the contact -->
+        <div class="last-message col-xs-12">
+            id={{contact}} key={{$store.state.contacts[contact].key}}
         </div>
 
     </div>
 </template>
 
 <script>
-    import {get, set} from 'idb-keyval'
-
     export default {
-        data() {
-            return {
-                message: "",
-
-            }
-        },
+        props: ['contact'],
         methods: {
-            sendMessage() {
-                // send the message
-
-                this.$store.state.chats[this.$store.state.selectedChat].push({received: false, content: this.message})
-
-                set('chats', this.$store.state.chats).then(() => {
-                    //
-                })
-
-                this.message = ""
+            // Selects the chat to be one shown in the middle of the screen
+            selectChat() {
+                this.$store.state.selectedChat = this.contact
             }
         }
     }
 </script>
 
 <style scoped>
-    .user-wrapper {
-        height: 50px;
-        border-bottom: gray 1px solid;
+    .chat-item {
+        height: 60px;
+        border-bottom: 1px solid gray;
+        padding: 10px;
+    }
+    .user {
         font-weight: bold;
-        font-size: 20px;
-        padding: 10px;
     }
-    .messages-wrapper {
-        height: calc(100vh - 100px);
-    }
-    .input-wrapper {
-        border-top: gray 1px solid;
-        height: 50px;
-    }
-    .input-field {
-        width: calc(100% - 30px);
-        border-radius: 10px;
-        padding: 10px;
-        background-color: lightgray;
-        border: 0;
-        margin: 5px;
+    .last-message {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 </style>
