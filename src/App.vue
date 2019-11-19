@@ -116,7 +116,7 @@
                 // base^exponent % modulo = res
                 return b.modPow(e, m).toString()
             },
-            
+
         },
     }
 </script>
