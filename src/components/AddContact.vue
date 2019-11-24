@@ -26,7 +26,6 @@
 			Your QR code
 		</div>
 		<qriously :value="personalCode" :size="177" />
-		 <span style="margin: 10px">{{$store.state}}</span>
 		<div style="margin: 10px">
 			<button @click="addContact">Add Contact</button>
 		</div>
