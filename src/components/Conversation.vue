@@ -38,11 +38,14 @@
             sendMessage() {
                 if (this.message.length == 0) return
                 // Post request for sending the message
+                // TODO encrypt message here using this.$store.state.contacts[this.$store.state.selectedChat].key
                 this.$http.post(
-                    this.$store.state.apiURL + 'sendMessage',
+                    this.$store.state.apiURL + 'messages/',
                     {
+                        sender: this.$store.state.credentials.id,
                         message: this.message,
-                        lastReceived: this.$store.state.credentials.lastReceived
+                        // TODO last received
+                        // lastReceived: this.$store.state.credentials.lastReceived
                     }
                 ).then((response) => {
                     console.log("message sent.")

@@ -15,9 +15,6 @@ import { get, set } from 'idb-keyval'
         },
         created() {
             this.getStoredData()
-
-			// TODO temporary test of the api authentication, gets user info
-            // this.getInfo()
         },
         methods: {
             // Gets chats, contacts and credentials from idb. If they don't exist, creates empty ones.
@@ -109,13 +106,12 @@ import { get, set } from 'idb-keyval'
                 })
             },
             // Gets messages from the api, gets called periodically
-            // TODO make this fetch something proper
             getMessages() {
                 this.$http.get(this.$store.state.apiURL + 'messages').then(response => {
+                	// Gets array of messages, for each message - check whether to store it
                     for (let message of response.body) {
-                        console.log(message)
-
 						if (this.$store.state.chats.hasOwnProperty(message.sender)) {
+							// TODO decrypt message.text here using this.$store.state.contacts[message.sender].key
 							this.$store.state.chats[message.sender].push({
 								received: true,
 								content: message.text
@@ -123,6 +119,7 @@ import { get, set } from 'idb-keyval'
 							this.$store.state.credentials.lastReceived = message.id
 						}
                     }
+                    // Save messages and lastReceived in idb
 					set('chats', this.$store.state.chats).then(() => {
 						console.log('chats saved.')
 					})
@@ -138,7 +135,7 @@ import { get, set } from 'idb-keyval'
                         "Authorization": "Bearer " + this.$store.state.credentials.accessToken
                     }
                 }
-                this.$http.get(this.$store.state.apiURL + 'info', options).then(response => {
+                this.$http.get(this.$store.state.apiURL + 'info/', options).then(response => {
                     console.log(response)
                 }).catch(e => {
                     console.log(e)
