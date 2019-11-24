@@ -23,7 +23,7 @@
     }
 </script>
 
-<style scoped>WWW
+<style scoped>
     .borders {
         border-left: 1px solid gray;
         border-right: 1px solid gray;
