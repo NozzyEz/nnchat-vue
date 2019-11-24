@@ -25,8 +25,8 @@
 		<div style="margin: 10px">
 			Your QR code
 		</div>
-		<qriously :value="personalCode" :size="177"></qriously>
-		<!-- <span style="margin: 10px">{{personalCode}}</span> -->
+		<qriously :value="personalCode" :size="177" />
+		 <span style="margin: 10px">{{$store.state}}</span>
 		<div style="margin: 10px">
 			<button @click="addContact">Add Contact</button>
 		</div>
@@ -41,8 +41,7 @@ export default {
 		return {
 			contactName: '', // the display name you set for your new contact
 			contactCode: '', // their code, in the format of TheirID_TheirPublicKeyFragment
-			personalCode:
-				this.$store.state.credentials.id + '_' + this.generatePublic(), // your code
+			personalCode: this.$store.state.credentials.id + '_' + this.generatePublic(), // your code
 		}
 	},
 	methods: {

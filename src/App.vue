@@ -16,38 +16,10 @@ import { get, set } from 'idb-keyval'
             }
         },
         created() {
-            // this.getStoredData()
+            this.getStoredData()
 
-            this.getInfo()
-            // let testUser = {
-            //     "username": "test1",
-            //     "password": "test123"
-            // }
-            // let options = {
-            //     headers: {
-            //         "Content-Type": "application/json",
-            //         "Accept": "application/json"
-            //     }
-            // }
-            // this.$http.post(this.$store.state.apiURL + 'auth/register/', testUser).then(response => {
-            //     console.log(response)
-            // })
-
-            // TODO token code
-            // this.$http.post(this.$store.state.apiURL + 'token', userCredentials).then((response) => {
-            //     if (!response.body.refresh || !response.body.access) {
-            //         console.log("tokens not received: ")
-            //         console.log(response)
-            //     }
-            //     else {
-            //         this.refreshToken = response.body.refresh
-            //         this.accessToken = response.body.access
-            //         console.log(this.refreshToken)
-            //         console.log(this.accessToken)
-            //     }
-            // }, error => {
-            //     console.log(error)
-            // })
+			// TODO temporary test of the api authentication, gets user info
+            // this.getInfo()
         },
         methods: {
             // Gets chats, contacts and credentials from idb. If they don't exist, creates empty ones.
@@ -139,7 +111,7 @@ import { get, set } from 'idb-keyval'
                 })
             },
             // Gets messages from the api, gets called periodically
-            // TODO make this fetch something proper, fix CORS
+            // TODO make this fetch something proper
             getMessages() {
                 this.$http.get(this.$store.state.apiURL + 'messages').then(response => {
                     console.log(response)
