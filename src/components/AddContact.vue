@@ -111,10 +111,10 @@ export default {
 			// Write the string to the contact code field so it can be used
 			this.contactCode = decodedString
 
-			// Split the decoded string up into it's two parts if we want to add automatic adding
-			// of contacts
-			let contact = decodedString.split('_')
-			console.log(contact)
+			//* Split the decoded string up into it's two parts if we want to add automatic adding
+			//* of contacts
+			// let contact = decodedString.split('_')
+			// console.log(contact)
 		},
 	},
 }
