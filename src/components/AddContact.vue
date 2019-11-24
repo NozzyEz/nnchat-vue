@@ -106,6 +106,7 @@ export default {
 			// base^exponent % modulo = res
 			return b.modPow(e, m).toString()
 		},
+		// Method that decodes the QR code
 		onQRDecode(decodedString) {
 			console.log(`QR code reads: ${decodedString}`)
 		},
