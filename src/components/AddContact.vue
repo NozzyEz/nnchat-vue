@@ -34,7 +34,6 @@
 			Your QR code
 		</div>
 		<qriously :value="personalCode" :size="177"></qriously>
-		<!-- <span style="margin: 10px">{{personalCode}}</span> -->
 	</div>
 </template>
 
