@@ -21,15 +21,20 @@
 			Their code
 		</div>
 		<input type="text" v-model="contactCode" style="margin: 10px" />
-
+		<div style="margin: 10px">
+			<button @click="addContact">Add Contact</button>
+			<br />
+			<br />
+			<button @click="addQR = !addQR">Add with QR</button>
+			<div id="qr-window" v-if="addQR == true">
+				<qrcode-stream @decode="onQRDecode"></qrcode-stream>
+			</div>
+		</div>
 		<div style="margin: 10px">
 			Your QR code
 		</div>
 		<qriously :value="personalCode" :size="177"></qriously>
 		<!-- <span style="margin: 10px">{{personalCode}}</span> -->
-		<div style="margin: 10px">
-			<button @click="addContact">Add Contact</button>
-		</div>
 	</div>
 </template>
 
@@ -39,6 +44,7 @@ import { get, set } from 'idb-keyval'
 export default {
 	data() {
 		return {
+			addQR: false,
 			contactName: '', // the display name you set for your new contact
 			contactCode: '', // their code, in the format of TheirID_TheirPublicKeyFragment
 			personalCode:
@@ -99,6 +105,9 @@ export default {
 			let m = bigInt(modulo) // big prime number
 			// base^exponent % modulo = res
 			return b.modPow(e, m).toString()
+		},
+		onQRDecode(decodedString) {
+			console.log(`QR code reads: ${decodedString}`)
 		},
 	},
 }
