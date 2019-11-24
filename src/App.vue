@@ -1,11 +1,11 @@
 <template>
-    <div id="app">
-        <router-view/>
-    </div>
+	<div id="app">
+		<router-view />
+	</div>
 </template>
 
 <script>
-    import {get, set} from 'idb-keyval'
+import { get, set } from 'idb-keyval'
 
     export default {
         data() {
