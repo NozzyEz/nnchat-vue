@@ -14,6 +14,12 @@
 </script>
 
 <style scoped>
+    @media only screen and (max-width: 767px) {
+        .messages {
+            width: calc(100% - 25px) !important;
+            padding: 0 15px 0 10px !important;
+        }
+    }
     .messages {
         width: 100%;
         padding: 0 17px 0 10px;

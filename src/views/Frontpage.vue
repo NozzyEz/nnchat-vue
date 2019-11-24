@@ -3,13 +3,13 @@
     <div>
 
         <div class="row">
-            <div class="col-xs-2">
+            <div class="col-md-2 col-xs-3">
                 <chats/>
             </div>
-            <div class="col-xs-8 borders">
+            <div class="col-md-8 col-xs-9 borders">
                 <conversation/>
             </div>
-            <div class="col-xs-2">
+            <div class="col-md-2 col-xs-12 add-contact">
                 <add-contact v-if="$store.state.addContactVisible"/>
             </div>
         </div>
@@ -27,5 +27,12 @@
     .borders {
         border-left: 1px solid gray;
         border-right: 1px solid gray;
+    }
+    @media only screen and (max-width: 767px) {
+        .add-contact {
+            z-index: 2;
+            position: fixed;
+            background: white;
+        }
     }
 </style>

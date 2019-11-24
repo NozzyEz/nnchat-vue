@@ -36,8 +36,10 @@
         methods: {
             // Sends a message
             sendMessage() {
+                if (this.message.length == 0) return
                 // Post request for sending the message
-                this.$http.post(this.$store.state.apiURL + 'sendMessage', {}).then((response) => {
+                this.$http.post(this.$store.state.apiURL + 'sendMessage', {message, lastReceived: this.$store.state.credentials.lastReceived}).then((response) => {
+                    console.log("message sent.")
                     console.log(response.body)
                 }, error => {
                     console.log(error)
