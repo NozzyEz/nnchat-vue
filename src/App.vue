@@ -11,8 +11,6 @@ import { get, set } from 'idb-keyval'
         data() {
             return {
                 credentials: {},
-                refreshToken: null, //TODO temp
-                accessToken: null, //TODO temp
             }
         },
         created() {
@@ -51,7 +49,7 @@ import { get, set } from 'idb-keyval'
                         this.$store.state.credentials = val
                         // Gets messages every 10 seconds
                         console.log('starting to fetch messages...')
-                        this.$options.interval = setInterval(this.getMessages, 10000)
+						this.$options.interval = setInterval(this.getMessages, 10000)
                     }
                 })
             },
@@ -114,13 +112,26 @@ import { get, set } from 'idb-keyval'
             // TODO make this fetch something proper
             getMessages() {
                 this.$http.get(this.$store.state.apiURL + 'messages').then(response => {
-                    console.log(response)
+                    for (let message of response.body) {
+                        console.log(message)
 
-                    // for (let message in response) {
-                    //     console.log(message)
-                    // }
+						if (this.$store.state.chats.hasOwnProperty(message.sender)) {
+							this.$store.state.chats[message.sender].push({
+								received: true,
+								content: message.text
+							})
+							this.$store.state.credentials.lastReceived = message.id
+						}
+                    }
+					set('chats', this.$store.state.chats).then(() => {
+						console.log('chats saved.')
+					})
+					set('credentials', this.$store.state.credentials).then(() => {
+						console.log('credentials saved.')
+					})
                 })
             },
+			// Gets user info by providing a token
             getInfo() {
                 let options = {
                     headers: {
@@ -132,7 +143,32 @@ import { get, set } from 'idb-keyval'
                 }).catch(e => {
                     console.log(e)
                 })
-            }
+            },
+			// Refreshes the access token
+			refreshToken() {
+            	let options = {
+            		headers: {
+            			'Content-Type': 'application/json'
+					}
+				}
+				this.$http.post(this.$store.state.apiURL + 'refresh/', {refresh: this.$store.state.credentials.refreshToken}, options).then(response => {
+					let token = response.body.access
+					if (token != null) {
+						console.log("new access token fetched...")
+						this.$store.state.credentials.accessToken = token
+						set('credentials', this.$store.state.credentials).then(() => {
+							console.log('token saved.')
+						})
+					}
+					else {
+						console.log("couldn't refresh token:")
+						console.log(response)
+					}
+				}).catch(e => {
+					console.log("error while refreshing token:")
+					console.log(e)
+				})
+			}
         },
     }
 </script>
