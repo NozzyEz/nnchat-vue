@@ -21,14 +21,19 @@
 			Their code
 		</div>
 		<input type="text" v-model="contactCode" style="margin: 10px" />
-
+		<div style="margin: 10px">
+			<button @click="addContact">Add Contact</button>
+			<br />
+			<br />
+			<button @click="addQR = !addQR">Add with QR</button>
+			<div id="qr-window" v-if="addQR == true">
+				<qrcode-stream @decode="onQRDecode"></qrcode-stream>
+			</div>
+		</div>
 		<div style="margin: 10px">
 			Your QR code
 		</div>
-		<qriously :value="personalCode" :size="177" />
-		<div style="margin: 10px">
-			<button @click="addContact">Add Contact</button>
-		</div>
+		<qriously :value="personalCode" :size="177"></qriously>
 	</div>
 </template>
 
@@ -38,9 +43,11 @@ import { get, set } from 'idb-keyval'
 export default {
 	data() {
 		return {
+			addQR: false,
 			contactName: '', // the display name you set for your new contact
 			contactCode: '', // their code, in the format of TheirID_TheirPublicKeyFragment
-			personalCode: this.$store.state.credentials.id + '_' + this.generatePublic(), // your code
+			personalCode:
+				this.$store.state.credentials.id + '_' + this.generatePublic(), // your code
 		}
 	},
 	methods: {
@@ -97,6 +104,17 @@ export default {
 			let m = bigInt(modulo) // big prime number
 			// base^exponent % modulo = res
 			return b.modPow(e, m).toString()
+		},
+		// Method that decodes the QR code
+		onQRDecode(decodedString) {
+			console.log(`QR code reads: ${decodedString}`)
+			// Write the string to the contact code field so it can be used
+			this.contactCode = decodedString
+
+			// Split the decoded string up into it's two parts if we want to add automatic adding
+			// of contacts
+			let contact = decodedString.split('_')
+			console.log(contact)
 		},
 	},
 }

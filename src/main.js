@@ -6,8 +6,10 @@ import VueResource from 'vue-resource'
 import 'flexboxgrid2/flexboxgrid2.min.css'
 import VueMq from 'vue-mq'
 import VueQriously from 'vue-qriously'
+import QrCodeStream from 'vue-qrcode-reader'
 
 Vue.use(VueQriously)
+Vue.use(QrCodeStream)
 Vue.use(VueResource)
 Vue.use(VueMq, {
 	breakpoints: {
