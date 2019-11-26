@@ -8,11 +8,6 @@
 import { get, set } from 'idb-keyval'
 
     export default {
-        data() {
-            return {
-                credentials: {},
-            }
-        },
         created() {
             this.getStoredData()
         },
@@ -44,10 +39,7 @@ import { get, set } from 'idb-keyval'
                     }
                     else {
                         this.$store.state.credentials = val
-						this.refreshToken() // TODO temp
-                        // Gets messages every 10 seconds
-                        console.log('starting to fetch messages...')
-						this.$options.interval = setInterval(this.getMessages, 10000)
+						this.login()
                     }
                 })
             },
@@ -56,14 +48,13 @@ import { get, set } from 'idb-keyval'
                 let random = require("randomstring")
                 let forge = require('node-forge')
                 forge.prime.generateProbablePrime(1024, (err, num) => {
-                    this.credentials = {
+                    this.$store.state.credentials = {
                         id: random.generate(150), // random string (150 chars)
                         password: random.generate(30), // random string (30 chars)
                         secret: num.toString(), // large prime for generating encryption keys (1024 bits)
                         lastReceived: 0, // id of the last message received, starts at 0
                     }
                     console.log('new credentials generated.')
-                    console.log(this.credentials)
 
                     // Registers a user with these credentials
                     this.register()
@@ -72,11 +63,11 @@ import { get, set } from 'idb-keyval'
             },
             register() {
                 let userCredentials = {
-                    username: this.credentials.id,
-                    password: this.credentials.password,
+                    username: this.$store.state.credentials.id,
+                    password: this.$store.state.credentials.password,
                 }
                 this.$http.post(this.$store.state.apiURL + 'auth/register/', userCredentials).then((response) => {
-                    // Check if user exists
+                    // If user exists
                     if (response.body.hasOwnProperty('success') && response.body.success == false) {
                         console.log("user already exists, generating new credentials...")
                         this.generateCredentials()
@@ -86,14 +77,14 @@ import { get, set } from 'idb-keyval'
                         console.log("tokens not received: ")
                         console.log(response)
                     }
+                    // Success
                     else {
-                        this.credentials.refreshToken = response.body.refresh
-                        this.credentials.accessToken = response.body.access
+                        this.$store.state.credentials.refreshToken = response.body.refresh
+                        this.$store.state.credentials.accessToken = response.body.access
 
                         // Stores credentials in idb
-                        set('credentials', this.credentials).then(() => {
+                        set('credentials', this.$store.state.credentials).then(() => {
                             console.log('new credentials stored.')
-                            this.$store.state.credentials = this.credentials
 
                             // Calls getMessages() every 10 seconds
                             console.log('starting to fetch messages...')
@@ -112,19 +103,24 @@ import { get, set } from 'idb-keyval'
 						'Authorization': 'Bearer ' + this.$store.state.credentials.accessToken
 					}
 				}
-				// TODO receive messages array
                 this.$http.post(this.$store.state.apiURL + 'receive/', {'last_message_id': this.$store.state.credentials.lastReceived}, options).then(response => {
+                	// If access token expires
+					if (response.body.code == "token_not_valid") {
+						dispatch()
+					}
                 	// Gets array of messages, for each message - check whether to store it
-                    for (let message of response.body) {
-						if (this.$store.state.chats.hasOwnProperty(message.sender)) {
-							// TODO decrypt message.text here using this.$store.state.contacts[message.sender].key
-							this.$store.state.chats[message.sender].push({
-								received: true,
-								content: message.text
-							})
-							this.$store.state.credentials.lastReceived = message.id
+					if (response.body.success == true && response.body.messages.length != 0) {
+						for (let message of response.body.messages) {
+							if (this.$store.state.chats.hasOwnProperty(message.sender)) {
+								// TODO decrypt message.text here using this.$store.state.contacts[message.sender].key
+								this.$store.state.chats[message.sender].push({
+									received: true,
+									content: message.message
+								})
+								this.$store.state.credentials.lastReceived = message.id
+							}
 						}
-                    }
+					}
                     // Save messages and lastReceived in idb
 					set('chats', this.$store.state.chats).then(() => {
 						console.log('chats saved.')
@@ -170,6 +166,35 @@ import { get, set } from 'idb-keyval'
 				}).catch(e => {
 					console.log("error while refreshing token:")
 					console.log(e)
+				})
+			},
+			login() {
+				let userCredentials = {
+					username: this.$store.state.credentials.id,
+					password: this.$store.state.credentials.password,
+				}
+				this.$http.post(this.$store.state.apiURL + 'token/', userCredentials).then((response) => {
+					// Error, no tokens received
+					if (!response.body.refresh || !response.body.access) {
+						console.log("tokens not received: ")
+						console.log(response)
+					}
+					else {
+						this.$store.state.credentials.refreshToken = response.body.refresh
+						this.$store.state.credentials.accessToken = response.body.access
+
+						// Stores credentials in idb
+						set('credentials', this.$store.state.credentials).then(() => {
+							console.log('tokens stored.')
+
+							// Calls getMessages() every 10 seconds
+							console.log('starting to fetch messages...')
+							this.$options.interval = setInterval(this.getMessages, 10000)
+						})
+					}
+				}, error => {
+					console.log("error while logging in:")
+					console.log(error)
 				})
 			}
         },
