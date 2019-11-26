@@ -34,16 +34,17 @@
 
 <script>
 import { get, set } from 'idb-keyval'
+import { sha512_256 } from 'js-sha512'
 
 export default {
 	data() {
 		return {
-			aesjs: null,
 			message: '',
 		}
 	},
 	created() {
 		this.aesjs = require('aes-js')
+		this.sha512 = require('js-sha512')
 	},
 	methods: {
 		// Sends a message
@@ -92,16 +93,31 @@ export default {
 			// clear input
 			this.message = ''
 		},
+		// Generate 128bit key as array from the generated DH key
+		generateKey(seed) {
+			// First create a hash from the shared key
+			let hash = sha512_256(seed)
+
+			// Next create a 8-bit array of unsigned ints
+			let generatedHash = Uint8Array.from(hash)
+			let generatedKey = []
+
+			// Then shorten it down to the first 16 bytes
+			for (let index = 0; index < 16; index++) {
+				generatedKey[index] = generatedHash[index]
+			}
+
+			// Return that array as a key for AES
+			return generatedKey
+		},
 		encryptMsg(message) {
-			// TODO encrypt message here using this.$store.state.contacts[this.$store.state.selectedChat].key
 			console.log(`original message: ${message}`)
-			console.log(
+
+			let key = this.generateKey(
 				this.$store.state.contacts[this.$store.state.selectedChat].key
 			)
-
-			// TODO Generate a 256bit key from the shared key
 			//* An example 128-bit key
-			let key = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+			// let key = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
 
 			// Convert the message to bytes
 			let textBytes = this.aesjs.utils.utf8.toBytes(message)
@@ -115,18 +131,6 @@ export default {
 			let encryptedBytes = aesCtr.encrypt(textBytes)
 			let encryptedHex = this.aesjs.utils.hex.fromBytes(encryptedBytes)
 			console.log(`encrypted: ${encryptedHex}`)
-
-			// // Convert to bytes, then decrypt and show the original message
-			// aesCtr = new this.aesjs.ModeOfOperation.ctr(
-			// 	key,
-			// 	new this.aesjs.Counter(5)
-			// )
-
-			// let decryptedBytes = aesCtr.decrypt(encryptedBytes)
-			// let decryptedText = this.aesjs.utils.utf8.fromBytes(decryptedBytes)
-
-			// console.log(`Decrypted: ${decryptedText}`)
-
 			// TODO end of encryption
 			return encryptedHex
 		},
