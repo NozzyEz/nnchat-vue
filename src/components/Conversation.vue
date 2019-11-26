@@ -36,17 +36,21 @@
         methods: {
             // Sends a message
             sendMessage() {
-                if (this.message.length == 0) return
+                if (this.message.length == 0 || this.$store.state.selectedChat == null) return
                 // Post request for sending the message
+                let options = {
+                    headers: {
+                        'Authorization': 'Bearer ' + this.$store.state.credentials.accessToken
+                    }
+                }
                 // TODO encrypt message here using this.$store.state.contacts[this.$store.state.selectedChat].key
                 this.$http.post(
-                    this.$store.state.apiURL + 'messages/',
+                    this.$store.state.apiURL + 'send/',
                     {
-                        sender: this.$store.state.credentials.id,
-                        message: this.message,
-                        // TODO last received
-                        // lastReceived: this.$store.state.credentials.lastReceived
-                    }
+                        receiver: this.$store.state.selectedChat,
+                        message: this.message
+                    },
+                    options
                 ).then((response) => {
                     console.log("message sent.")
                     console.log(response.body)

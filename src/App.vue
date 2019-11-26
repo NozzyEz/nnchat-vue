@@ -44,6 +44,7 @@ import { get, set } from 'idb-keyval'
                     }
                     else {
                         this.$store.state.credentials = val
+						this.refreshToken() // TODO temp
                         // Gets messages every 10 seconds
                         console.log('starting to fetch messages...')
 						this.$options.interval = setInterval(this.getMessages, 10000)
@@ -75,8 +76,8 @@ import { get, set } from 'idb-keyval'
                     password: this.credentials.password,
                 }
                 this.$http.post(this.$store.state.apiURL + 'auth/register/', userCredentials).then((response) => {
-                    // TODO check if user exists
-                    if (response.body.message == "user exists") {
+                    // Check if user exists
+                    if (response.body.hasOwnProperty('success') && response.body.success == false) {
                         console.log("user already exists, generating new credentials...")
                         this.generateCredentials()
                     }
@@ -86,7 +87,6 @@ import { get, set } from 'idb-keyval'
                         console.log(response)
                     }
                     else {
-                        // TODO handle tokens
                         this.credentials.refreshToken = response.body.refresh
                         this.credentials.accessToken = response.body.access
 
@@ -107,7 +107,13 @@ import { get, set } from 'idb-keyval'
             },
             // Gets messages from the api, gets called periodically
             getMessages() {
-                this.$http.get(this.$store.state.apiURL + 'messages').then(response => {
+				let options = {
+					headers: {
+						'Authorization': 'Bearer ' + this.$store.state.credentials.accessToken
+					}
+				}
+				// TODO receive messages array
+                this.$http.post(this.$store.state.apiURL + 'receive/', {'last_message_id': this.$store.state.credentials.lastReceived}, options).then(response => {
                 	// Gets array of messages, for each message - check whether to store it
                     for (let message of response.body) {
 						if (this.$store.state.chats.hasOwnProperty(message.sender)) {
