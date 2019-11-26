@@ -104,6 +104,8 @@ export default {
 					}
 				)
 		},
+		// This method is to generate an encryption key from the shared key, this is not directly
+		// for security, but an easy way to ensure a 128bit key to pass to AES
 		generateKey(seed) {
 			// First create a hash from the shared key
 			let hash = sha512_256(seed)
