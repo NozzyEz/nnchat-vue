@@ -36,8 +36,8 @@ export default new Vuex.Store({
                 }
             }).catch(e => {
                 console.log("error while refreshing token:")
-                console.log(e)
                 if (e.body.code == 'token_not_valid') {
+                    console.log("refresh token expired.")
                     this.dispatch('login')
                 }
             })
@@ -59,7 +59,7 @@ export default new Vuex.Store({
 
                     // Stores credentials in idb
                     set('credentials', this.state.credentials).then(() => {
-                        console.log('tokens stored.')
+                        console.log('new tokens stored.')
                     })
                 }
             }, error => {

@@ -129,11 +129,13 @@ import { get, set } from 'idb-keyval'
 					})
                 }, error => {
 					console.log("error getting messages:")
-					console.log(error)
 					// If access token expires
 					if (error.body.code == "token_not_valid") {
 						console.log("Token expired.")
 						this.$store.dispatch('refreshToken')
+					}
+					else {
+						console.log(error)
 					}
 				})
             },
