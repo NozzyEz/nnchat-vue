@@ -7,6 +7,9 @@ import 'flexboxgrid2/flexboxgrid2.min.css'
 import VueMq from 'vue-mq'
 import VueQriously from 'vue-qriously'
 import QrCodeStream from 'vue-qrcode-reader'
+import bigInt from 'big-integer'
+import randomString from  'randomstring'
+import forge from 'node-forge'
 
 Vue.use(VueQriously)
 Vue.use(QrCodeStream)
@@ -17,6 +20,11 @@ Vue.use(VueMq, {
 		lg: Infinity
 	}
 })
+
+Object.defineProperty(Vue.prototype, '$bigInt', { value: bigInt })
+Object.defineProperty(Vue.prototype, '$randomString', { value: randomString })
+Object.defineProperty(Vue.prototype, '$forge', { value: forge })
+
 
 Vue.filter('date', function (value) {
 	if (!value) return ''
