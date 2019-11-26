@@ -39,7 +39,10 @@ import { get, set } from 'idb-keyval'
                     }
                     else {
                         this.$store.state.credentials = val
-						this.login()
+
+						// Calls getMessages() every 10 seconds
+						console.log('starting to fetch messages...')
+						this.$options.interval = setInterval(this.getMessages, 10000)
                     }
                 })
             },
@@ -104,10 +107,6 @@ import { get, set } from 'idb-keyval'
 					}
 				}
                 this.$http.post(this.$store.state.apiURL + 'receive/', {'last_message_id': this.$store.state.credentials.lastReceived}, options).then(response => {
-                	// If access token expires
-					if (response.body.code == "token_not_valid") {
-						dispatch()
-					}
                 	// Gets array of messages, for each message - check whether to store it
 					if (response.body.success == true && response.body.messages.length != 0) {
 						for (let message of response.body.messages) {
@@ -128,75 +127,16 @@ import { get, set } from 'idb-keyval'
 					set('credentials', this.$store.state.credentials).then(() => {
 						console.log('credentials saved.')
 					})
-                })
-            },
-			// Gets user info by providing a token
-            getInfo() {
-                let options = {
-                    headers: {
-                        "Authorization": "Bearer " + this.$store.state.credentials.accessToken
-                    }
-                }
-                this.$http.get(this.$store.state.apiURL + 'info/', options).then(response => {
-                    console.log(response)
-                }).catch(e => {
-                    console.log(e)
-                })
-            },
-			// Refreshes the access token
-			refreshToken() {
-            	let options = {
-            		headers: {
-            			'Content-Type': 'application/json'
-					}
-				}
-				this.$http.post(this.$store.state.apiURL + 'refresh/', {refresh: this.$store.state.credentials.refreshToken}, options).then(response => {
-					let token = response.body.access
-					if (token != null) {
-						console.log("new access token fetched...")
-						this.$store.state.credentials.accessToken = token
-						set('credentials', this.$store.state.credentials).then(() => {
-							console.log('token saved.')
-						})
-					}
-					else {
-						console.log("couldn't refresh token:")
-						console.log(response)
-					}
-				}).catch(e => {
-					console.log("error while refreshing token:")
-					console.log(e)
-				})
-			},
-			login() {
-				let userCredentials = {
-					username: this.$store.state.credentials.id,
-					password: this.$store.state.credentials.password,
-				}
-				this.$http.post(this.$store.state.apiURL + 'token/', userCredentials).then((response) => {
-					// Error, no tokens received
-					if (!response.body.refresh || !response.body.access) {
-						console.log("tokens not received: ")
-						console.log(response)
-					}
-					else {
-						this.$store.state.credentials.refreshToken = response.body.refresh
-						this.$store.state.credentials.accessToken = response.body.access
-
-						// Stores credentials in idb
-						set('credentials', this.$store.state.credentials).then(() => {
-							console.log('tokens stored.')
-
-							// Calls getMessages() every 10 seconds
-							console.log('starting to fetch messages...')
-							this.$options.interval = setInterval(this.getMessages, 10000)
-						})
-					}
-				}, error => {
-					console.log("error while logging in:")
+                }, error => {
+					console.log("error getting messages:")
 					console.log(error)
+					// If access token expires
+					if (error.body.code == "token_not_valid") {
+						console.log("Token expired.")
+						this.$store.dispatch('refreshToken')
+					}
 				})
-			}
+            },
         },
     }
 </script>
