@@ -6,18 +6,18 @@
 			<div class="col-xs" v-if="$store.state.selectedChat">
 				{{ $store.state.contacts[$store.state.selectedChat].name }}
 			</div>
-		</div>
-
-		<!-- Name of the contact at the top -->
-		<div class="user-wrapper row middle-xs">
-			<div class="col-xs" v-if="$store.state.selectedChat">
-				{{ $store.state.contacts[$store.state.selectedChat].name }}
-			</div>
 			<div v-if="!$store.state.canConnect" class="col-xs end-xs error">
 				Connection lost
 			</div>
 		</div>
 
+		<!-- Messages of the conversation -->
+		<div class="messages-wrapper">
+			<messages
+				v-if="$store.state.selectedChat"
+				:chat="$store.state.chats[$store.state.selectedChat]"
+			/>
+		</div>
 		<!-- Input field for sending messages -->
 		<div class="input-wrapper row middle-xs">
 			<div class="col-xs">
