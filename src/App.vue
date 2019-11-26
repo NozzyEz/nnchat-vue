@@ -9,6 +9,7 @@ import { get, set } from 'idb-keyval'
 export default {
 	created() {
 		this.getStoredData()
+		this.aesjs = require('aes-js')
 	},
 	methods: {
 		// Gets chats, contacts and credentials from idb. If they don't exist, creates empty ones.
@@ -96,6 +97,25 @@ export default {
 					}
 				)
 		},
+		// TODO Write method to decrypt a message
+		decryptMsg(message) {
+			//* Encryption key:
+			let key = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+			// Create a new counter
+			let aesCtr = new this.aesjs.ModeOfOperation.ctr(
+				key,
+				new this.aesjs.Counter(5)
+			)
+			// Take the encrypted message in hex and convert it to bytes
+			let encryptedBytes = this.aesjs.utils.hex.toBytes(message)
+			// take the bytes and decrypt them
+			let decryptedBytes = aesCtr.decrypt(encryptedBytes)
+			// convert the decrypted bytes to text
+			let decryptedText = this.aesjs.utils.utf8.fromBytes(decryptedBytes)
+
+			console.log(`Decrypted: ${decryptedText}`)
+			return decryptedText
+		},
 		// Gets messages from the api, gets called periodically
 		getMessages() {
 			let options = {
@@ -122,9 +142,10 @@ export default {
 						for (let message of response.body.messages) {
 							if (this.$store.state.chats.hasOwnProperty(message.sender)) {
 								// TODO decrypt message.text here using this.$store.state.contacts[message.sender].key
+								let decryptedMessage = this.decryptMsg(message.message)
 								this.$store.state.chats[message.sender].push({
 									received: true,
-									content: message.message,
+									content: decryptedMessage,
 								})
 								this.$store.state.credentials.lastReceived = message.id
 							}
