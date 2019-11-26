@@ -48,12 +48,10 @@ import { get, set } from 'idb-keyval'
             },
             // Generates credentials for the user upon the first time opening the app.
             generateCredentials() {
-                let random = require("randomstring")
-                let forge = require('node-forge')
-                forge.prime.generateProbablePrime(1024, (err, num) => {
+                this.$forge.prime.generateProbablePrime(1024, (err, num) => {
                     this.$store.state.credentials = {
-                        id: random.generate(150), // random string (150 chars)
-                        password: random.generate(30), // random string (30 chars)
+                        id: this.$randomString.generate(150), // random string (150 chars)
+                        password: this.$randomString.generate(30), // random string (30 chars)
                         secret: num.toString(), // large prime for generating encryption keys (1024 bits)
                         lastReceived: 0, // id of the last message received, starts at 0
                     }
@@ -121,12 +119,9 @@ import { get, set } from 'idb-keyval'
 						}
 					}
                     // Save messages and lastReceived in idb
-					set('chats', this.$store.state.chats).then(() => {
-						console.log('chats saved.')
-					})
-					set('credentials', this.$store.state.credentials).then(() => {
-						console.log('credentials saved.')
-					})
+					set('chats', this.$store.state.chats)
+					set('credentials', this.$store.state.credentials)
+
                 }, error => {
 					console.log("error getting messages:")
 					// If access token expires

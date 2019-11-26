@@ -98,10 +98,9 @@ export default {
 		},
 		// A modPow method for the Diffie Hellman exchange
 		dh(base, exponent, modulo) {
-			let bigInt = require('big-integer')
-			let b = bigInt(base) // small prime number
-			let e = bigInt(exponent) // private secret, big prime number
-			let m = bigInt(modulo) // big prime number
+			let b = this.$bigInt(base) // small prime number
+			let e = this.$bigInt(exponent) // private secret, big prime number
+			let m = this.$bigInt(modulo) // big prime number
 			// base^exponent % modulo = res
 			return b.modPow(e, m).toString()
 		},
