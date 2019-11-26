@@ -105,7 +105,8 @@ import { get, set } from 'idb-keyval'
 					}
 				}
                 this.$http.post(this.$store.state.apiURL + 'receive/', {'last_message_id': this.$store.state.credentials.lastReceived}, options).then(response => {
-                	// Gets array of messages, for each message - check whether to store it
+					this.$store.state.canConnect = true
+					// Gets array of messages, for each message - check whether to store it
 					if (response.body.success == true && response.body.messages.length != 0) {
 						for (let message of response.body.messages) {
 							if (this.$store.state.chats.hasOwnProperty(message.sender)) {
@@ -128,6 +129,10 @@ import { get, set } from 'idb-keyval'
 					if (error.body.code == "token_not_valid") {
 						console.log("Token expired.")
 						this.$store.dispatch('refreshToken')
+					}
+					else if (error.ok == false) {
+						console.log("can't connect")
+						this.$store.state.canConnect = false
 					}
 					else {
 						console.log(error)

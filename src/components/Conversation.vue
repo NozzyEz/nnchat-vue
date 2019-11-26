@@ -7,6 +7,9 @@
             <div class="col-xs" v-if="$store.state.selectedChat">
                 {{$store.state.contacts[$store.state.selectedChat].name}}
             </div>
+            <div v-if="!$store.state.canConnect" class="col-xs end-xs error">
+                Connection lost
+            </div>
         </div>
 
         <!-- Messages of the conversation -->
@@ -96,5 +99,8 @@
         background-color: lightgray;
         border: 0;
         margin: 5px;
+    }
+    .error {
+        color: red;
     }
 </style>
