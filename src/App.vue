@@ -6,11 +6,13 @@
 
 <script>
 import { get, set } from 'idb-keyval'
+import { sha512_256 } from 'js-sha512'
 
 export default {
 	created() {
 		this.getStoredData()
 		this.aesjs = require('aes-js')
+		this.sha512 = require('js-sha512')
 	},
 	methods: {
 		// Gets chats, contacts and credentials from idb. If they don't exist, creates empty ones.
@@ -102,10 +104,29 @@ export default {
 					}
 				)
 		},
-		// TODO Write method to decrypt a message
+		// This method is to generate an encryption key from the shared key, this is not directly
+		// for security, but an easy way to ensure a 128bit key to pass to AES
+		generateKey(seed) {
+			// First create a hash from the shared key
+			let hash = sha512_256(seed)
+
+			// Next create a 8-bit array of unsigned ints
+			let generatedHash = Uint8Array.from(hash)
+			let generatedKey = []
+
+			// Then shorten it down to the first 16 bytes
+			for (let index = 0; index < 16; index++) {
+				generatedKey[index] = generatedHash[index]
+			}
+
+			// Return that array as a key for AES
+			return generatedKey
+		},
 		decryptMsg(message) {
 			//* Encryption key:
-			let key = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+			let key = this.generateKey(
+				this.$store.state.contacts[this.$store.state.selectedChat].key
+			)
 			// Create a new counter
 			let aesCtr = new this.aesjs.ModeOfOperation.ctr(
 				key,
