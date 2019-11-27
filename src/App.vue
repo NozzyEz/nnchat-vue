@@ -5,35 +5,30 @@
 </template>
 
 <script>
-import { get, set } from 'idb-keyval'
-import { sha512_256 } from 'js-sha512'
-
 export default {
 	created() {
 		this.getStoredData()
-		this.aesjs = require('aes-js')
-		this.sha512 = require('js-sha512')
 	},
 	methods: {
 		// Gets chats, contacts and credentials from idb. If they don't exist, creates empty ones.
 		getStoredData() {
-			get('chats').then(val => {
+			this.$idbGet('chats').then(val => {
 				if (val === undefined) {
 					console.log('stored chats not found...')
-					set('chats', {}).then(() => {
+					this.$idbSet('chats', {}).then(() => {
 						console.log('empty chats list created.')
 					})
 				} else this.$store.state.chats = val
 			})
-			get('contacts').then(val => {
+			this.$idbGet('contacts').then(val => {
 				if (val === undefined) {
 					console.log('stored contacts not found...')
-					set('contacts', {}).then(() => {
+					this.$idbSet('contacts', {}).then(() => {
 						console.log('empty contacts list created.')
 					})
 				} else this.$store.state.contacts = val
 			})
-			get('credentials').then(val => {
+			this.$idbGet('credentials').then(val => {
 				if (val === undefined) {
 					console.log('stored credentials not found...')
 					this.generateCredentials()
@@ -89,7 +84,7 @@ export default {
 							this.$store.state.credentials.accessToken = response.body.access
 
 							// Stores credentials in idb
-							set('credentials', this.$store.state.credentials).then(() => {
+							this.$idbSet('credentials', this.$store.state.credentials).then(() => {
 								console.log('new credentials stored.')
 
 								// Calls getMessages() every 10 seconds
@@ -108,7 +103,7 @@ export default {
 		// for security, but an easy way to ensure a 128bit key to pass to AES
 		generateKey(seed) {
 			// First create a hash from the shared key
-			let hash = sha512_256(seed)
+			let hash = this.$sha2(seed)
 
 			// Next create a 8-bit array of unsigned ints
 			let generatedHash = Uint8Array.from(hash)
@@ -128,16 +123,16 @@ export default {
 				this.$store.state.contacts[this.$store.state.selectedChat].key
 			)
 			// Create a new counter
-			let aesCtr = new this.aesjs.ModeOfOperation.ctr(
+			let aesCtr = new this.$aes.ModeOfOperation.ctr(
 				key,
-				new this.aesjs.Counter(5)
+				new this.$aes.Counter(5)
 			)
 			// Take the encrypted message in hex and convert it to bytes
-			let encryptedBytes = this.aesjs.utils.hex.toBytes(message)
+			let encryptedBytes = this.$aes.utils.hex.toBytes(message)
 			// take the bytes and decrypt them
 			let decryptedBytes = aesCtr.decrypt(encryptedBytes)
 			// convert the decrypted bytes to text
-			let decryptedText = this.aesjs.utils.utf8.fromBytes(decryptedBytes)
+			let decryptedText = this.$aes.utils.utf8.fromBytes(decryptedBytes)
 
 			console.log(`Decrypted: ${decryptedText}`)
 			return decryptedText
@@ -165,7 +160,6 @@ export default {
 						) {
 							for (let message of response.body.messages) {
 								if (this.$store.state.chats.hasOwnProperty(message.sender)) {
-									// TODO decrypt message.text here using this.$store.state.contacts[message.sender].key
 									let decryptedMessage = this.decryptMsg(message.message)
 									this.$store.state.chats[message.sender].push({
 										received: true,
@@ -176,8 +170,8 @@ export default {
 							}
 						}
 						// Save messages and lastReceived in idb
-						set('chats', this.$store.state.chats)
-						set('credentials', this.$store.state.credentials)
+						this.$idbSet('chats', this.$store.state.chats)
+						this.$idbSet('credentials', this.$store.state.credentials)
 					},
 					error => {
 						console.log('error getting messages:')

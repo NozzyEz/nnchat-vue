@@ -33,18 +33,11 @@
 </template>
 
 <script>
-import { get, set } from 'idb-keyval'
-import { sha512_256 } from 'js-sha512'
-
 export default {
 	data() {
 		return {
 			message: '',
 		}
-	},
-	created() {
-		this.aesjs = require('aes-js')
-		this.sha512 = require('js-sha512')
 	},
 	methods: {
 		// Sends a message
@@ -84,7 +77,7 @@ export default {
 				received: false,
 				content: this.message,
 			})
-			set('chats', this.$store.state.chats).then(() => {
+			this.$idbSet('chats', this.$store.state.chats).then(() => {
 				// scroll down to see the new message
 				let mesDiv = document.getElementById('messages')
 				mesDiv.scrollTop = mesDiv.scrollHeight
@@ -96,7 +89,7 @@ export default {
 		// Generate 128bit key as array from the generated DH key
 		generateKey(seed) {
 			// First create a hash from the shared key
-			let hash = sha512_256(seed)
+			let hash = this.$sha2(seed)
 
 			// Next create a 8-bit array of unsigned ints
 			let generatedHash = Uint8Array.from(hash)
@@ -120,16 +113,16 @@ export default {
 			// let key = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
 
 			// Convert the message to bytes
-			let textBytes = this.aesjs.utils.utf8.toBytes(message)
+			let textBytes = this.$aes.utils.utf8.toBytes(message)
 
 			//* Setup our encryption mode
-			let aesCtr = new this.aesjs.ModeOfOperation.ctr(
+			let aesCtr = new this.$aes.ModeOfOperation.ctr(
 				key,
-				new this.aesjs.Counter(5)
+				new this.$aes.Counter(5)
 			)
 			//* Encrypt and convert to hex
 			let encryptedBytes = aesCtr.encrypt(textBytes)
-			let encryptedHex = this.aesjs.utils.hex.fromBytes(encryptedBytes)
+			let encryptedHex = this.$aes.utils.hex.fromBytes(encryptedBytes)
 			console.log(`encrypted: ${encryptedHex}`)
 			// TODO end of encryption
 			return encryptedHex

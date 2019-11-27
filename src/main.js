@@ -10,6 +10,9 @@ import QrCodeStream from 'vue-qrcode-reader'
 import bigInt from 'big-integer'
 import randomString from  'randomstring'
 import forge from 'node-forge'
+import aes from 'aes-js'
+import { sha512_256 } from 'js-sha512'
+import { get, set } from 'idb-keyval'
 
 Vue.use(VueQriously)
 Vue.use(QrCodeStream)
@@ -24,6 +27,10 @@ Vue.use(VueMq, {
 Object.defineProperty(Vue.prototype, '$bigInt', { value: bigInt })
 Object.defineProperty(Vue.prototype, '$randomString', { value: randomString })
 Object.defineProperty(Vue.prototype, '$forge', { value: forge })
+Object.defineProperty(Vue.prototype, '$aes', { value: aes })
+Object.defineProperty(Vue.prototype, '$sha2', { value: sha512_256 })
+Object.defineProperty(Vue.prototype, '$idbGet', { value: get })
+Object.defineProperty(Vue.prototype, '$idbSet', { value: set })
 
 
 Vue.filter('date', function (value) {
