@@ -8,6 +8,7 @@
 export default {
 	created() {
 		this.getStoredData()
+		this.$store.state.selectedChat = this.$cookies.get('selectedChat')
 	},
 	methods: {
 		// Gets chats, contacts and credentials from idb. If they don't exist, creates empty ones.
@@ -117,10 +118,10 @@ export default {
 			// Return that array as a key for AES
 			return generatedKey
 		},
-		decryptMsg(message) {
+		decryptMsg(message, sender) {
 			//* Encryption key:
 			let key = this.generateKey(
-				this.$store.state.contacts[this.$store.state.selectedChat].key
+				this.$store.state.contacts[sender].key
 			)
 			// Create a new counter
 			let aesCtr = new this.$aes.ModeOfOperation.ctr(
@@ -153,24 +154,34 @@ export default {
 				.then(
 					response => {
 						this.$store.state.canConnect = true
+						console.log(response.body.messages.length + " messages fetched")
+						console.log(response.body.messages)
 						// Gets array of messages, for each message - check whether to store it
 						if (
 							response.body.success == true &&
 							response.body.messages.length != 0
 						) {
 							for (let message of response.body.messages) {
+								// If the user has that contact
 								if (this.$store.state.chats.hasOwnProperty(message.sender)) {
-									let decryptedMessage = this.decryptMsg(message.message)
+									// Decrypt the message
+									let decryptedMessage = this.decryptMsg(message.message, message.sender)
+									// Save the message
 									this.$store.state.chats[message.sender].push({
 										received: true,
 										content: decryptedMessage,
 									})
+									// Update the last received message ID
 									this.$store.state.credentials.lastReceived = message.id
 								}
 							}
 						}
 						// Save messages and lastReceived in idb
-						this.$idbSet('chats', this.$store.state.chats)
+						this.$idbSet('chats', this.$store.state.chats).then(() => {
+							// scroll down to see the new message
+							let mesDiv = document.getElementById('messages')
+							mesDiv.scrollTop = mesDiv.scrollHeight
+						})
 						this.$idbSet('credentials', this.$store.state.credentials)
 					},
 					error => {

@@ -3,6 +3,9 @@
 	<div>
 		<!-- Name of the contact at the top -->
 		<div class="user-wrapper row middle-xs">
+			<div class="col-xs-1" v-if="$mq === 'sm'" @click="$store.state.contactsVisible = true">
+				←
+			</div>
 			<div class="col-xs" v-if="$store.state.selectedChat">
 				{{ $store.state.contacts[$store.state.selectedChat].name }}
 			</div>
@@ -45,32 +48,11 @@ export default {
 			if (this.message.length == 0 || this.$store.state.selectedChat == null)
 				return
 			// Post request for sending the message
-			let options = {
-				headers: {
-					Authorization: 'Bearer ' + this.$store.state.credentials.accessToken,
-				},
-			}
+
 			let encryptedMessage = this.encryptMsg(this.message)
 			console.log(encryptedMessage)
 
-			this.$http
-				.post(
-					this.$store.state.apiURL + 'send/',
-					{
-						receiver: this.$store.state.selectedChat,
-						message: encryptedMessage,
-					},
-					options
-				)
-				.then(
-					response => {
-						console.log('message sent.')
-						console.log(response.body)
-					},
-					error => {
-						console.log(error)
-					}
-				)
+			this.postMessage(encryptedMessage, this.$store.state.selectedChat)
 
 			// Stores the message locally
 			this.$store.state.chats[this.$store.state.selectedChat].push({
@@ -85,6 +67,38 @@ export default {
 
 			// clear input
 			this.message = ''
+		},
+		// Sends the post request for the message
+		postMessage(message, receiver) {
+			let options = {
+				headers: {
+					Authorization: 'Bearer ' + this.$store.state.credentials.accessToken,
+				},
+			}
+			this.$http
+					.post(
+							this.$store.state.apiURL + 'send/',
+							{
+								receiver: receiver,
+								message: message,
+							},
+							options
+					)
+					.then(
+							response => {
+								console.log('message sent.')
+								console.log(response.body)
+							},
+							error => {
+								console.log(error)
+								// Since there's an error, try to refresh the token and post again
+								this.$store.dispatch('refreshToken').then(response => {
+									this.postMessage(message, receiver)
+								}, error => {
+									console.log("couldn't refresh token while sending message.")
+								})
+							}
+					)
 		},
 		// Generate 128bit key as array from the generated DH key
 		generateKey(seed) {

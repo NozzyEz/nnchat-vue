@@ -2,14 +2,25 @@
 <template>
     <div class="messages" id="messages">
 
-        <message v-for="message in chat" :message="message"/>
+        <message v-for="(message, index) in chat" :message="message" @click.native="deleteMessage(index)"/>
 
     </div>
 </template>
 
 <script>
     export default {
-        props: ['chat']
+        props: ['chat'],
+        methods: {
+            deleteMessage(index) {
+                if (confirm("Delete this message?")) {
+                    // ok
+                    console.log("deleting message " + index)
+                    this.chat.splice(index, 1)
+                } else {
+                    // cancel
+                }
+            }
+        }
     }
 </script>
 

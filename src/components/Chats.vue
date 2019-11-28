@@ -3,18 +3,18 @@
     <div class="chats">
 
         <!-- Button for adding a new contact -->
-        <div class="add-contact row middle-xs" @click="showWindow">
-            <div class="col-xs start-xs">
-                Add Contact
+        <div class="add-contact row middle-xs">
+            <div class="col-xs-11 start-xs" @click="showWindow">
+                + Add New Contact
             </div>
-            <div class="col-xs end-xs">
-                +
+            <div v-if="$mq === 'sm'" class="col-xs-1 end-xs" @click="closeWindow">
+                X
             </div>
         </div>
 
         <!-- A list of all chats/contacts -->
         <div class="chat-items">
-            <chat v-for="(value, contact) in $store.state.contacts" :contact="contact"/>
+            <chat v-for="(value, contact) in $store.state.contacts" :contact="contact" :class="{'selected': contact == $store.state.selectedChat}"/>
         </div>
 
     </div>
@@ -30,6 +30,9 @@
         methods: {
             showWindow() {
                 this.$store.state.addContactVisible = true
+            },
+            closeWindow() {
+                this.$store.state.contactsVisible = false
             }
         }
     }
@@ -55,5 +58,8 @@
         overflow-y: scroll;
         overflow-x: hidden;
         box-sizing: content-box;
+    }
+    .selected {
+        background: #eeeeee;
     }
 </style>

@@ -3,14 +3,14 @@
     <div>
 
         <div class="row">
-            <div class="col-md-2 col-xs-3">
-                <chats/>
+            <div class="col-md-2 col-xs-12 chats" v-if="$store.state.contactsVisible || $mq === 'lg'">
+                <chats />
             </div>
-            <div class="col-md-8 col-xs-9 borders">
-                <conversation/>
+            <div class="col-md-8 col-xs-12 borders">
+                <conversation />
             </div>
-            <div class="col-md-2 col-xs-12 add-contact">
-                <add-contact v-if="$store.state.addContactVisible"/>
+            <div class="col-md-2 col-xs-12 add-contact" v-if="$store.state.addContactVisible">
+                <add-contact />
             </div>
         </div>
 
@@ -30,6 +30,11 @@
     }
     @media only screen and (max-width: 767px) {
         .add-contact {
+            z-index: 4;
+            position: fixed;
+            background: white;
+        }
+        .chats {
             z-index: 2;
             position: fixed;
             background: white;

@@ -2,38 +2,29 @@
 <template>
 	<div class="add-contact">
 		<!-- Close button -->
-		<div class="close row middle-xs" @click="hideWindow">
+		<div class="close row middle-xs">
 			<div class="col-xs start-xs">
-				Close
+				Add Contact
 			</div>
-			<div class="col-xs end-xs">
+			<div class="col-xs end-xs" @click="hideWindow">
 				X
 			</div>
 		</div>
 
 		<!-- New contact form -->
-		<div style="margin: 10px">
-			Contact Name
-		</div>
-		<input type="text" v-model="contactName" style="margin: 10px" />
-
-		<div style="margin: 10px">
-			Their code
-		</div>
-		<input type="text" v-model="contactCode" style="margin: 10px" />
-		<div style="margin: 10px">
-			<button @click="addContact">Add Contact</button>
-			<br />
-			<br />
-			<button @click="addQR = !addQR">Add with QR</button>
-			<div id="qr-window" v-if="addQR == true">
-				<qrcode-stream @decode="onQRDecode"></qrcode-stream>
-			</div>
-		</div>
-		<div style="margin: 10px">
-			Your QR code
+		<div style="margin: 10px 10px">
+			Show this code to the other user:
 		</div>
 		<qriously :value="personalCode" :size="177"></qriously>
+
+		<div style="margin: 10px">
+			<div id="qr-window" :class="[contactCode == '' ? 'red-border' : 'green-border']" style="margin-bottom: 20px">
+				<qrcode-stream @decode="onQRDecode"></qrcode-stream>
+			</div>
+
+			<input type="text" v-model="contactName" style="margin: 20px 5px 10px" placeholder="Contact name" :class="[contactName == '' ? 'red-border' : 'green-border']" />
+			<button @click="addContact">Add Contact</button>
+		</div>
 	</div>
 </template>
 
@@ -43,7 +34,6 @@ import { get, set } from 'idb-keyval'
 export default {
 	data() {
 		return {
-			addQR: false,
 			contactName: '', // the display name you set for your new contact
 			contactCode: '', // their code, in the format of TheirID_TheirPublicKeyFragment
 			personalCode:
@@ -120,16 +110,22 @@ export default {
 </script>
 
 <style scoped>
-.add-contact {
-	border-right: 1px gray solid;
-	height: 100vh;
-	width: 100%;
-}
-.close {
-	height: 50px;
-	border-bottom: 1px solid gray;
-	padding: 10px;
-	background: lightgray;
-	font-weight: bold;
-}
+	.add-contact {
+		border-right: 1px gray solid;
+		height: 100vh;
+		width: 100%;
+	}
+	.close {
+		height: 50px;
+		border-bottom: 1px solid gray;
+		padding: 10px;
+		background: lightgray;
+		font-weight: bold;
+	}
+	.red-border {
+		border: red 2px solid;
+	}
+	.green-border {
+		border: greenyellow 2px solid;
+	}
 </style>

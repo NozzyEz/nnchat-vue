@@ -13,10 +13,14 @@ import forge from 'node-forge'
 import aes from 'aes-js'
 import { sha512_256 } from 'js-sha512'
 import { get, set } from 'idb-keyval'
+import VueCookies from 'vue-cookies'
+
+VueCookies.config('7d')
 
 Vue.use(VueQriously)
 Vue.use(QrCodeStream)
 Vue.use(VueResource)
+Vue.use(VueCookies)
 Vue.use(VueMq, {
 	breakpoints: {
 		sm: 768,
