@@ -171,18 +171,20 @@ export default {
 										received: true,
 										content: decryptedMessage,
 									})
-									// Update the last received message ID
-									this.$store.state.credentials.lastReceived = message.id
+									// Set the seen value
+									this.$store.state.contacts[message.sender].seen = message.sender == this.$store.state.selectedChat
 								}
 							}
+							// Update the last received message ID
+							this.$store.state.credentials.lastReceived = response.body.messages[response.body.messages.length-1].id
 						}
 						// Save messages and lastReceived in idb
 						this.$idbSet('chats', this.$store.state.chats).then(() => {
 							// scroll down to see the new message
 							let mesDiv = document.getElementById('messages')
-							mesDiv.scrollTop = mesDiv.scrollHeight
+							if (mesDiv != null) mesDiv.scrollTop = mesDiv.scrollHeight
+							this.$idbSet('credentials', this.$store.state.credentials)
 						})
-						this.$idbSet('credentials', this.$store.state.credentials)
 					},
 					error => {
 						console.log('error getting messages:')

@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { get, set } from 'idb-keyval'
 
 Vue.use(Vuex)
 
@@ -29,7 +28,7 @@ export default new Vuex.Store({
                     if (token != null) {
                         console.log("new access token fetched...")
                         this.state.credentials.accessToken = token
-                        set('credentials', this.state.credentials).then(() => {
+                        this._vm.$idbSet('credentials', this.state.credentials).then(() => {
                             console.log('token saved.')
                             resolve(response)
                         })
@@ -68,7 +67,7 @@ export default new Vuex.Store({
                         this.state.credentials.accessToken = response.body.access
 
                         // Stores credentials in idb
-                        set('credentials', this.state.credentials).then(() => {
+                        this._vm.$idbSet('credentials', this.state.credentials).then(() => {
                             console.log('new tokens stored.')
                             resolve(response)
                         })

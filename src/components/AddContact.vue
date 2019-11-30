@@ -12,25 +12,26 @@
 		</div>
 
 		<!-- New contact form -->
-		<div style="margin: 10px 10px">
-			Show this code to the other user:
-		</div>
-		<qriously :value="personalCode" :size="177"></qriously>
-
 		<div style="margin: 10px">
-			<div id="qr-window" :class="[contactCode == '' ? 'red-border' : 'green-border']" style="margin-bottom: 20px">
+			<div>
+				Show this code to the other user:
+			</div>
+			<qriously :value="personalCode" :size="177"></qriously>
+
+			<div v-if="contactCode == ''" id="qr-window">
 				<qrcode-stream @decode="onQRDecode"></qrcode-stream>
 			</div>
+			<div v-else style="color: green">
+				Code scanned.
+			</div>
 
-			<input type="text" v-model="contactName" style="margin: 20px 5px 10px" placeholder="Contact name" :class="[contactName == '' ? 'red-border' : 'green-border']" />
+			<input type="text" v-model="contactName" style="margin: 20px 10px 10px 0" placeholder="Contact name" :class="[contactName == '' ? 'red-border' : 'green-border']" />
 			<button @click="addContact">Add Contact</button>
 		</div>
 	</div>
 </template>
 
 <script>
-import { get, set } from 'idb-keyval'
-
 export default {
 	data() {
 		return {
@@ -54,16 +55,16 @@ export default {
 			let id = this.contactCode.split('_')[0]
 			let key = this.generateShared(this.contactCode.split('_')[1])
 
-			let contact = { name: this.contactName, key: key }
+			let contact = { name: this.contactName, key: key, seen: true }
 
 			// Adds contact and new empty chat to vuex
 			this.$set(this.$store.state.contacts, id, contact)
 			this.$set(this.$store.state.chats, id, [])
 
 			// Stores contact and new empty chat to idb
-			set('contacts', this.$store.state.contacts).then(() => {
+			this.$idbSet('contacts', this.$store.state.contacts).then(() => {
 				console.log('contact created...')
-				set('chats', this.$store.state.chats).then(() => {
+				this.$idbSet('chats', this.$store.state.chats).then(() => {
 					console.log('chat created.')
 				})
 			})
@@ -126,6 +127,15 @@ export default {
 		border: red 2px solid;
 	}
 	.green-border {
-		border: greenyellow 2px solid;
+		border: green 2px solid;
+	}
+	#qr-window {
+		margin-bottom: 20px;
+	}
+	@media only screen and (max-width: 767px) {
+		#qr-window {
+			max-width: 60vw;
+			margin-bottom: 0 !important;
+		}
 	}
 </style>

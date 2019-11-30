@@ -12,8 +12,9 @@ import randomString from  'randomstring'
 import forge from 'node-forge'
 import aes from 'aes-js'
 import { sha512_256 } from 'js-sha512'
-import { get, set } from 'idb-keyval'
+import { get, set, del } from 'idb-keyval'
 import VueCookies from 'vue-cookies'
+import LongPress from 'vue-directive-long-press'
 
 VueCookies.config('7d')
 
@@ -35,7 +36,9 @@ Object.defineProperty(Vue.prototype, '$aes', { value: aes })
 Object.defineProperty(Vue.prototype, '$sha2', { value: sha512_256 })
 Object.defineProperty(Vue.prototype, '$idbGet', { value: get })
 Object.defineProperty(Vue.prototype, '$idbSet', { value: set })
+Object.defineProperty(Vue.prototype, '$idbDel', { value: del })
 
+Vue.directive('long-press', LongPress)
 
 Vue.filter('date', function (value) {
 	if (!value) return ''

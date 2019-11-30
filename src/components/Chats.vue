@@ -17,6 +17,12 @@
             <chat v-for="(value, contact) in $store.state.contacts" :contact="contact" :class="{'selected': contact == $store.state.selectedChat}"/>
         </div>
 
+        <div class="delete-wrapper row middle-xs center-xs" @click="deleteData">
+            <div class="col-xs">
+                Delete all data
+            </div>
+        </div>
+
     </div>
 </template>
 
@@ -33,6 +39,23 @@
             },
             closeWindow() {
                 this.$store.state.contactsVisible = false
+            },
+            // Shows an alert window to delete all local data (chats, contacts, credentials)
+            deleteData() {
+                if (confirm("Delete all local data?")) {
+                    // ok
+                    console.log("deleting all data")
+                    this.$store.state.selectedChat = null
+                    this.$store.state.contacts = {}
+                    this.$store.state.chats = {}
+                    this.$store.state.credentials = {}
+                    this.$idbDel('contacts')
+                    this.$idbDel('chats')
+                    this.$idbDel('credentials')
+                } else {
+                    // cancel
+                    console.log("delete canceled")
+                }
             }
         }
     }
@@ -53,7 +76,7 @@
     }
     .chat-items {
         width: calc(100% + 17px);
-        height: 100%;
+        height: calc(100vh - 100px);
         padding: 0 17px 0 0;
         overflow-y: scroll;
         overflow-x: hidden;
@@ -61,5 +84,10 @@
     }
     .selected {
         background: #eeeeee;
+    }
+    .delete-wrapper {
+        height: 50px;
+        color: darkred;
+        border-top: 1px solid gray;
     }
 </style>

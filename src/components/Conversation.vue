@@ -6,7 +6,7 @@
 			<div class="col-xs-1" v-if="$mq === 'sm'" @click="$store.state.contactsVisible = true">
 				←
 			</div>
-			<div class="col-xs" v-if="$store.state.selectedChat">
+			<div class="col-xs" v-if="chatSelected">
 				{{ $store.state.contacts[$store.state.selectedChat].name }}
 			</div>
 			<div v-if="!$store.state.canConnect" class="col-xs end-xs error">
@@ -17,7 +17,7 @@
 		<!-- Messages of the conversation -->
 		<div class="messages-wrapper">
 			<messages
-				v-if="$store.state.selectedChat"
+				v-if="chatSelected"
 				:chat="$store.state.chats[$store.state.selectedChat]"
 			/>
 		</div>
@@ -40,6 +40,12 @@ export default {
 	data() {
 		return {
 			message: '',
+		}
+	},
+	computed: {
+		chatSelected() {
+			return this.$store.state.selectedChat != null
+					&& this.$store.state.contacts.hasOwnProperty(this.$store.state.selectedChat)
 		}
 	},
 	methods: {
