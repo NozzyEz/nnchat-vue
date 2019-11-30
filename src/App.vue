@@ -38,7 +38,7 @@ export default {
 
 					// Calls getMessages() every 10 seconds
 					console.log('starting to fetch messages...')
-					this.$options.interval = setInterval(this.getMessages, 10000)
+					this.$options.interval = setInterval(this.getMessages, 5000)
 				}
 			})
 		},
@@ -90,7 +90,7 @@ export default {
 
 								// Calls getMessages() every 10 seconds
 								console.log('starting to fetch messages...')
-								this.$options.interval = setInterval(this.getMessages, 10000)
+								this.$options.interval = setInterval(this.getMessages, 5000)
 							})
 						}
 					},
