@@ -2,17 +2,17 @@
 <template>
 	<div class="add-contact">
 		<!-- Close button -->
-		<div class="close row middle-xs">
+		<div class="close row middle-xs no-select">
 			<div class="col-xs start-xs">
 				Add Contact
 			</div>
 			<div class="col-xs end-xs" @click="hideWindow">
-				X
+				⛌
 			</div>
 		</div>
 
 		<!-- New contact form -->
-		<div style="margin: 10px">
+		<div style="margin: 10px" class="no-select">
 			<div>
 				Show this code to the other user:
 			</div>
@@ -48,6 +48,7 @@ export default {
 		},
 		// Adds new contact if the form was filled in
 		addContact() {
+			// If no name was given or code hasn't been scanned, return
 			if (this.contactName.length == 0) return
 			if (!this.contactCode.includes('_')) return
 

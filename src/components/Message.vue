@@ -1,6 +1,6 @@
 <!-- A single message in the conversation, differently styled if the message was received or sent -->
 <template>
-    <div class="message-wrapper row" :class="[message.received ? 'start-xs' : 'end-xs']">
+    <div class="message-wrapper row no-select" :class="[message.received ? 'start-xs' : 'end-xs']">
 
         <div class="message" :class="[message.received ? 'received' : 'sent']">
             {{message.content}}

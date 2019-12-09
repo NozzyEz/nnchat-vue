@@ -35,8 +35,7 @@ export default {
 					this.generateCredentials()
 				} else {
 					this.$store.state.credentials = val
-
-					// Calls getMessages() every 10 seconds
+					// Calls getMessages() every 5 seconds
 					console.log('starting to fetch messages...')
 					this.$options.interval = setInterval(this.getMessages, 5000)
 				}
@@ -44,19 +43,27 @@ export default {
 		},
 		// Generates credentials for the user upon the first time opening the app.
 		generateCredentials() {
-			this.$forge.prime.generateProbablePrime(1024, (err, num) => {
-				this.$store.state.credentials = {
-					id: this.$randomString.generate(150), // random string (150 chars)
-					password: this.$randomString.generate(30), // random string (30 chars)
-					secret: num.toString(), // large prime for generating encryption keys (1024 bits)
-					lastReceived: 0, // id of the last message received, starts at 0
-				}
-				console.log('new credentials generated.')
-
-				// Registers a user with these credentials
-				this.register()
-			})
+			this.$store.state.credentials = {
+				id: this.$randomString.generate(150), // random string (150 chars)
+				password: this.$randomString.generate(30), // random string (30 chars)
+				secret: this.generateSecret(), // large prime for generating encryption keys (1024 bits)
+				lastReceived: 0, // id of the last message received, starts at 0
+			}
+			console.log('new credentials generated.')
+			// Registers a user with these credentials
+			this.register()
 		},
+		// Generates a random 1024 byte number
+		generateSecret() {
+			let array = new Uint32Array(32)
+			let nums = window.crypto.getRandomValues(array)
+			let secret = ""
+			for (let num of nums) {
+				secret += num
+			}
+			return secret
+		},
+		// Registers a new account with credentials
 		register() {
 			let userCredentials = {
 				username: this.$store.state.credentials.id,
@@ -88,7 +95,7 @@ export default {
 							this.$idbSet('credentials', this.$store.state.credentials).then(() => {
 								console.log('new credentials stored.')
 
-								// Calls getMessages() every 10 seconds
+								// Calls getMessages() every 5 seconds
 								console.log('starting to fetch messages...')
 								this.$options.interval = setInterval(this.getMessages, 5000)
 							})

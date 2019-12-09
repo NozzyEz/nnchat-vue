@@ -2,9 +2,9 @@
 <template>
 	<div>
 		<!-- Name of the contact at the top -->
-		<div class="user-wrapper row middle-xs">
+		<div class="user-wrapper row middle-xs no-select">
 			<div class="col-xs-1" v-if="$mq === 'sm'" @click="$store.state.contactsVisible = true">
-				←
+				☰
 			</div>
 			<div class="col-xs" v-if="chatSelected">
 				{{ $store.state.contacts[$store.state.selectedChat].name }}
@@ -51,14 +51,7 @@ export default {
 	methods: {
 		// Sends a message
 		sendMessage() {
-			if (this.message.length == 0 || this.$store.state.selectedChat == null)
-				return
-			// Post request for sending the message
-
-			let encryptedMessage = this.encryptMsg(this.message)
-			console.log(encryptedMessage)
-
-			this.postMessage(encryptedMessage, this.$store.state.selectedChat)
+			if (this.message.length == 0 || this.$store.state.selectedChat == null) return
 
 			// Stores the message locally
 			this.$store.state.chats[this.$store.state.selectedChat].push({
@@ -70,6 +63,10 @@ export default {
 				let mesDiv = document.getElementById('messages')
 				mesDiv.scrollTop = mesDiv.scrollHeight
 			})
+
+			// Post request for sending the encrypted message
+			let encryptedMessage = this.encryptMsg(this.message)
+			this.postMessage(encryptedMessage, this.$store.state.selectedChat)
 
 			// clear input
 			this.message = ''
