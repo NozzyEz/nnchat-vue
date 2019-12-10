@@ -7,7 +7,7 @@
 				Add Contact
 			</div>
 			<div class="col-xs end-xs" @click="hideWindow">
-				⛌
+				×
 			</div>
 		</div>
 
@@ -25,7 +25,7 @@
 				Code scanned.
 			</div>
 
-			<input type="text" v-model="contactName" style="margin: 20px 10px 10px 0" placeholder="Contact name" :class="[contactName == '' ? 'red-border' : 'green-border']" />
+			<input type="text" v-model="contactName" style="margin: 20px 0 10px 0" placeholder="Contact name" :class="[contactName == '' ? 'red-border' : 'green-border']" />
 			<button @click="addContact">Add Contact</button>
 		</div>
 	</div>

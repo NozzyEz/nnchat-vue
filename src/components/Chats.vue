@@ -8,7 +8,7 @@
                 ✚ Add New Contact
             </div>
             <div v-if="$mq === 'sm'" class="col-xs-1 end-xs" @click="closeWindow">
-                ⛌
+                ×
             </div>
         </div>
 
