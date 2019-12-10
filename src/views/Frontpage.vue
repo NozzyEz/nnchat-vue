@@ -4,7 +4,7 @@
 
         <div class="row">
             <transition enter-active-class="animated slideInLeft faster" leave-active-class="animated slideOutLeft faster">
-                <div class="col-md-2 col-xs-12 chats" v-if="$store.state.contactsVisible || $mq === 'lg'">
+                <div class="col-md-2 col-xs-12 chats borders" v-if="$store.state.contactsVisible || $mq === 'lg'">
                     <chats />
                 </div>
             </transition>
@@ -14,7 +14,7 @@
             </div>
 
             <transition enter-active-class="animated slideInRight faster" leave-active-class="animated slideOutRight faster">
-                <div class="col-md-2 col-xs-12 add-contact" v-if="$store.state.addContactVisible">
+                <div class="col-md-2 col-xs-12 add-contact borders" v-if="$store.state.addContactVisible">
                     <add-contact />
                 </div>
             </transition>

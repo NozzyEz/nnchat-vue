@@ -90,4 +90,9 @@
         color: darkred;
         border-top: 1px solid gray;
     }
+    @media (max-width: 767px) {
+        .chat-items {
+            height: calc(100vh - 100px - 56px) !important;
+        }
+    }
 </style>

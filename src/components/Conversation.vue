@@ -1,6 +1,6 @@
 <!-- The conversation with a single contact shown in the middle -->
 <template>
-	<div>
+	<div class="conversation full-height">
 		<!-- Name of the contact at the top -->
 		<div class="user-wrapper row middle-xs no-select">
 			<div class="col-xs-1" v-if="$mq === 'sm'" @click="$store.state.contactsVisible = true">
@@ -174,5 +174,10 @@ export default {
 }
 .error {
 	color: red;
+}
+@media (max-width: 767px) {
+	.messages-wrapper {
+		height: calc(100vh - 100px - 56px) !important;
+	}
 }
 </style>
