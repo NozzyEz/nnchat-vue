@@ -46,7 +46,7 @@ export default {
 			this.$store.state.credentials = {
 				id: this.$randomString.generate(150), // random string (150 chars)
 				password: this.$randomString.generate(30), // random string (30 chars)
-				secret: this.generateSecret(), // large prime for generating encryption keys (1024 bits)
+				secret: this.generateSecret(), // large random number for generating encryption keys (1024 bits)
 				lastReceived: 0, // id of the last message received, starts at 0
 			}
 			console.log('new credentials generated.')
