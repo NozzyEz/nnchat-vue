@@ -177,7 +177,7 @@ export default {
 }
 @media (max-width: 767px) {
 	.messages-wrapper {
-		/*height: calc(100vh - 100px - 56px) !important;*/
+		height: calc(100vh - 100px - 56px) !important;
 	}
 }
 </style>
